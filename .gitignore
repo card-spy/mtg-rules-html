@@ -2,6 +2,7 @@
 **/*
 !.github
 !.gitignore
+!.style.yapf
 !main.py
 !LICENSE
 !README.md
