@@ -1,4 +1,6 @@
 import requests
+import markdown
+from markdown.extensions.toc import TocExtension
 from bs4 import BeautifulSoup
 
 TOP_LEVEL_HEADINGS = [
@@ -40,8 +42,6 @@ def parseLineFromRules(line):
 
 def parseRulesTextIntoMarkdown(rules_text):
   markdown_rules = ""
-
-  count = 0
   skip_contents_list = False
 
   for line in rules_text.splitlines():
@@ -50,19 +50,18 @@ def parseRulesTextIntoMarkdown(rules_text):
         skip_contents_list = False
       continue
 
-    if (count == 100):
-      break
-
     markdown_rules += parseLineFromRules(line.strip())
 
     if (line.strip() == "Contents"):
       skip_contents_list = True
+      markdown_rules += "[TOC]\n"
 
-    count += 1
   return markdown_rules.strip()
 
-def createHTMLFromMarkdown():
-  return "TBC"
+def createHTMLFromMarkdown(markdown_rules):
+  return markdown.markdown(
+    markdown_rules,
+    extensions=[TocExtension(anchorlink=True, toc_depth=('2-3'))])
 
 if __name__ == '__main__':
   """
@@ -79,7 +78,7 @@ if __name__ == '__main__':
 
   markdown_rules = parseRulesTextIntoMarkdown(rules_text)
 
-  # html_rules = createHTMLFromMarkdown(markdown_rules)
+  html_rules = createHTMLFromMarkdown(markdown_rules)
 
-  # with open('rules.html', 'w') as f:
-  #   f.write(html_rules)
+  with open('rules.html', 'w') as f:
+    f.write(html_rules)
