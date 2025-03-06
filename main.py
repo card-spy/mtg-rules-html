@@ -63,6 +63,47 @@ def createHTMLFromMarkdown(markdown_rules):
     markdown_rules,
     extensions=[TocExtension(anchorlink=True, toc_depth=('2-3'))])
 
+def createHTMLRulesPage(html_rules):
+
+  styles = """
+  <style>
+    body {
+      margin: 0 10px 0 10px;
+    }
+    .toclink {
+      color:white;
+      text-decoration: none;
+    }
+    a {
+      text-decoration: none;
+      margin-left: 0;
+    }
+    a:hover, .toclink:hover {
+      text-decoration: underline;
+    }
+    ul {
+      padding-left: 20px
+    }
+    h2 {
+      margin: 10px 0 10px 0;
+    }
+  </style>
+  """
+
+  return f"""
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Magic: The Gathering Comprehensive Rules</title>
+      <meta charset="utf-8">
+      {styles}
+    </head>
+    <body>
+      {html_rules}
+    </body>
+  </html>
+  """
+
 if __name__ == '__main__':
   """
   1. Scrape the rules page to get a link to the text version of the rulebook
@@ -80,5 +121,7 @@ if __name__ == '__main__':
 
   html_rules = createHTMLFromMarkdown(markdown_rules)
 
+  rules_page = createHTMLRulesPage(html_rules)
+
   with open('rules.html', 'w') as f:
-    f.write(html_rules)
+    f.write(rules_page)
