@@ -91,9 +91,7 @@ def parseRulesTextIntoMarkdown(rules_text):
     elif current_section == 'Rules':
       if (line.strip() == "Glossary"):
         current_section = 'Glossary'
-
         markdown_rules += parseLineFromRules(line.strip())
-
         continue
 
       if (len(line.strip()) > 0):
@@ -103,10 +101,12 @@ def parseRulesTextIntoMarkdown(rules_text):
     elif current_section == 'Glossary':
       if (line.strip() == "Credits"):
         current_section = 'Credits'
+        markdown_rules += parseLineFromRules(line.strip())
+        continue
 
-      markdown_rules += parseLineFromRules(line.strip())
+      markdown_rules += line + '\n\n'
     else:
-      markdown_rules += parseLineFromRules(line.strip())
+      markdown_rules += line + '\n\n'
 
   return markdown_rules.strip()
 
