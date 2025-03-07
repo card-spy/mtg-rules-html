@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import requests
 import markdown
 from markdown.extensions.toc import TocExtension
