@@ -105,8 +105,10 @@ def parseRulesTextIntoMarkdown(rules_text):
         continue
 
       markdown_rules += line + '\n\n'
-    else:
+    elif current_section == 'Credits':
       markdown_rules += line + '\n\n'
+    else:
+      markdown_rules += parseLineFromRules(line.strip())
 
   return markdown_rules.strip()
 
