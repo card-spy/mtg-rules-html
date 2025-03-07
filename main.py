@@ -2,6 +2,7 @@
 
 import requests
 import markdown
+import re
 from markdown.extensions.toc import TocExtension
 from bs4 import BeautifulSoup
 
@@ -34,6 +35,28 @@ def downloadRulesText(url):
 
   return response.content.decode('utf-8-sig')
 
+def getIdAndRule(line):
+  (id, rule) = re.split(r'\s', line, maxsplit=1)
+  return (id, rule)
+
+def isRuleSection(line):
+  (id, rule) = getIdAndRule(line)
+  return re.match(r'^\d{1,2}[.]$', id) != None
+
+def isRuleSubsection(line):
+  (id, rule) = getIdAndRule(line)
+  return re.match(r'^\d{3,}[.]$', id) != None
+
+def parseRulesEntry(rules_entry):
+  if isRuleSection(rules_entry):
+    (id, rule) = getIdAndRule(rules_entry)
+    return '## ' + rule + '\n'
+  elif isRuleSubsection(rules_entry):
+    (id, rule) = getIdAndRule(rules_entry)
+    return '### ' + rule + '\n'
+  else:
+    return rules_entry + '\n'
+
 def parseLineFromRules(line):
   if line in TOP_LEVEL_HEADINGS:
     return '# ' + line + '\n'
@@ -44,19 +67,46 @@ def parseLineFromRules(line):
 
 def parseRulesTextIntoMarkdown(rules_text):
   markdown_rules = ""
-  skip_contents_list = False
+  current_section = None
 
   for line in rules_text.splitlines():
-    if (skip_contents_list):
+    if line.strip() == 'Introduction':
+      current_section = 'Introduction'
+
+    if current_section == 'Introduction':
+      if (line.strip() == "Contents"):
+        current_section = 'Contents'
+
+        markdown_rules += parseLineFromRules(line.strip())
+        markdown_rules += "[TOC]\n"
+
+        continue
+
+      markdown_rules += parseLineFromRules(line.strip())
+    elif current_section == 'Contents':
       if (line.strip() == "Credits"):
-        skip_contents_list = False
+        current_section = 'Rules'
+
       continue
+    elif current_section == 'Rules':
+      if (line.strip() == "Glossary"):
+        current_section = 'Glossary'
 
-    markdown_rules += parseLineFromRules(line.strip())
+        markdown_rules += parseLineFromRules(line.strip())
 
-    if (line.strip() == "Contents"):
-      skip_contents_list = True
-      markdown_rules += "[TOC]\n"
+        continue
+
+      if (len(line.strip()) > 0):
+        markdown_rules += parseRulesEntry(line.strip())
+      else:
+        markdown_rules += '\n\n'
+    elif current_section == 'Glossary':
+      if (line.strip() == "Credits"):
+        current_section = 'Credits'
+
+      markdown_rules += parseLineFromRules(line.strip())
+    else:
+      markdown_rules += parseLineFromRules(line.strip())
 
   return markdown_rules.strip()
 
