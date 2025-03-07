@@ -125,7 +125,7 @@ def createHTMLRulesPage(html_rules):
       margin: 0 10px 0 10px;
     }
     .toclink {
-      color:white;
+      color: unset;
       text-decoration: none;
     }
     a {
