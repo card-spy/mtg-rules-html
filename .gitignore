@@ -4,5 +4,6 @@
 !.gitignore
 !.style.yapf
 !main.py
+!requirements.txt
 !LICENSE
 !README.md
