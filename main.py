@@ -57,7 +57,8 @@ def formatIndividualRule(line):
   This functions takes a rule entry like:
   - 104.3a A player can concede the game at any time.
   And parses it into this markdown format:
-  - [104.3a A player can concede the game at any time.](#104.3a) {{: id="104.3a" }}
+  - [104.3a](#104.3a) A player can concede the game at any time.
+    {{: #104.3a }} 
   """
   (id, rule) = getIdAndRule(line)
   return f'[{id}](#{id}) {rule}\n {{: #{id} }}\n'
