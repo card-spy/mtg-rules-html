@@ -4,6 +4,7 @@ import requests
 import markdown
 import re
 from markdown.extensions.toc import TocExtension
+from markdown.extensions.attr_list import AttrListExtension
 from bs4 import BeautifulSoup
 
 TOP_LEVEL_HEADINGS = [
@@ -47,6 +48,20 @@ def isRuleSubsection(line):
   (id, rule) = getIdAndRule(line)
   return re.match(r'^\d{3,}[.]$', id) != None
 
+def isIndividualRule(line):
+  (id, rule) = getIdAndRule(line)
+  return re.match(r'^\d{3,}[.]\d{1,}([a-z]+|[.])$', id) != None
+
+def formatIndividualRule(line):
+  """
+  This functions takes a rule entry like:
+  - 104.3a A player can concede the game at any time.
+  And parses it into this markdown format:
+  - [104.3a A player can concede the game at any time.](#104.3a) {{: id="104.3a" }}
+  """
+  (id, rule) = getIdAndRule(line)
+  return f'[{id}](#{id}) {rule}\n {{: #{id} }}'
+
 def parseRulesEntry(rules_entry):
   if isRuleSection(rules_entry):
     (id, rule) = getIdAndRule(rules_entry)
@@ -54,6 +69,8 @@ def parseRulesEntry(rules_entry):
   elif isRuleSubsection(rules_entry):
     (id, rule) = getIdAndRule(rules_entry)
     return '### ' + rule + '\n'
+  elif isIndividualRule(rules_entry):
+    return formatIndividualRule(rules_entry)
   else:
     return rules_entry + '\n'
 
@@ -115,7 +132,7 @@ def parseRulesTextIntoMarkdown(rules_text):
 def createHTMLFromMarkdown(markdown_rules):
   return markdown.markdown(
     markdown_rules,
-    extensions=[TocExtension(anchorlink=True, toc_depth=('2-3'))])
+    extensions=[TocExtension(anchorlink=True, toc_depth=('2-3')), AttrListExtension()])
 
 def createHTMLRulesPage(html_rules):
 

@@ -12,6 +12,10 @@ a {
 a:hover, .toclink:hover {
     text-decoration: underline;
 }
+p > a {
+    color: unset;
+    font-weight: bold;
+}
 ul {
     padding-left: 20px
 }
