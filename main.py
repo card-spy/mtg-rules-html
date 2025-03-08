@@ -119,38 +119,13 @@ def createHTMLFromMarkdown(markdown_rules):
 
 def createHTMLRulesPage(html_rules):
 
-  styles = """
-  <style>
-    body {
-      margin: 0 10px 0 10px;
-    }
-    .toclink {
-      color: unset;
-      text-decoration: none;
-    }
-    a {
-      text-decoration: none;
-      margin-left: 0;
-    }
-    a:hover, .toclink:hover {
-      text-decoration: underline;
-    }
-    ul {
-      padding-left: 20px
-    }
-    h2 {
-      margin: 10px 0 10px 0;
-    }
-  </style>
-  """
-
   return f"""
   <!DOCTYPE html>
   <html>
     <head>
       <title>Magic: The Gathering Comprehensive Rules</title>
       <meta charset="utf-8">
-      {styles}
+      <link rel="stylesheet" href="rules.css">
     </head>
     <body>
       {html_rules}
