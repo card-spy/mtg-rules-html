@@ -60,7 +60,10 @@ def formatIndividualRule(line):
   - [104.3a A player can concede the game at any time.](#104.3a) {{: id="104.3a" }}
   """
   (id, rule) = getIdAndRule(line)
-  return f'[{id}](#{id}) {rule}\n {{: #{id} }}'
+  return f'[{id}](#{id}) {rule}\n {{: #{id} }}\n'
+
+def isExampleForRule(line):
+  return line.lower().startswith('example')
 
 def parseRulesEntry(rules_entry):
   if isRuleSection(rules_entry):
@@ -71,6 +74,8 @@ def parseRulesEntry(rules_entry):
     return '### ' + rule + '\n'
   elif isIndividualRule(rules_entry):
     return formatIndividualRule(rules_entry)
+  elif isExampleForRule(rules_entry):
+    return '\n_' + rules_entry + '_\n'
   else:
     return rules_entry + '\n'
 
@@ -130,12 +135,13 @@ def parseRulesTextIntoMarkdown(rules_text):
   return markdown_rules.strip()
 
 def createHTMLFromMarkdown(markdown_rules):
-  return markdown.markdown(
-    markdown_rules,
-    extensions=[TocExtension(anchorlink=True, toc_depth=('2-3')), AttrListExtension()])
+  return markdown.markdown(markdown_rules,
+                           extensions=[
+                             TocExtension(anchorlink=True, toc_depth=('2-3')),
+                             AttrListExtension()
+                           ])
 
 def createHTMLRulesPage(html_rules):
-
   return f"""
   <!DOCTYPE html>
   <html>
