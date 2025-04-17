@@ -170,7 +170,7 @@ def parseRulesTextIntoMarkdown(rules_text):
 def createHTMLFromMarkdown(markdown_rules):
   return markdown.markdown(markdown_rules,
                            extensions=[
-                             TocExtension(anchorlink=True, toc_depth=('2-3')),
+                             TocExtension(anchorlink=True, toc_depth=('2')),
                              AttrListExtension()
                            ])
 
