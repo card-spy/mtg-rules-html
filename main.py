@@ -105,7 +105,8 @@ def parseGlossaryIntoMarkdown(glossary_text):
       markdown_glossary += parseLineFromRules(line.strip())
     elif (current_term == ''):
       current_term = line.strip()
-      markdown_glossary += '### ' + current_term + '\n'
+      current_term_id = current_term.replace(' ', '-').lower()
+      markdown_glossary += f'### {current_term} {{: #gl-{current_term_id} }}\n'
     elif (isListItem(line)):
       in_list = True
       markdown_glossary += line.strip() + '\n'
