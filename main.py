@@ -66,6 +66,9 @@ def formatIndividualRule(line):
 def isExampleForRule(line):
   return line.lower().startswith('example')
 
+def isListItem(line):
+  return re.match(r'^\d[.].*$', line) != None
+
 def parseRulesEntry(rules_entry):
   if isRuleSection(rules_entry):
     (id, rule) = getIdAndRule(rules_entry)
@@ -88,11 +91,45 @@ def parseLineFromRules(line):
   else:
     return line + '\n'
 
+def parseGlossaryIntoMarkdown(glossary_text):
+  markdown_glossary = ""
+  current_term = ''
+  in_list = False
+
+  for line in glossary_text:
+    if (line.strip() == ''):
+      current_term = ''
+      continue
+
+    if (line.strip() == 'Glossary'):
+      markdown_glossary += parseLineFromRules(line.strip())
+    elif (current_term == ''):
+      current_term = line.strip()
+      markdown_glossary += '### ' + current_term + '\n'
+    elif (isListItem(line)):
+      in_list = True
+      markdown_glossary += line.strip() + '\n'
+    elif (in_list):
+      in_list = False
+      markdown_glossary += '\n' + line.strip() + '\n'
+    else:
+      markdown_glossary += line.strip() + '\n'
+
+  return markdown_glossary
+
 def parseRulesTextIntoMarkdown(rules_text):
   markdown_rules = ""
   current_section = None
 
-  for line in rules_text.splitlines():
+  rules = rules_text.splitlines();
+
+  glossary_pos = rules.index('Glossary', 1000)
+  credits_pos = rules.index('Credits', glossary_pos) 
+
+  glossary = rules[glossary_pos:credits_pos]
+  credits = rules[credits_pos:]
+
+  for line in rules:
     if line.strip() == 'Introduction':
       current_section = 'Introduction'
 
@@ -113,25 +150,20 @@ def parseRulesTextIntoMarkdown(rules_text):
       continue
     elif current_section == 'Rules':
       if (line.strip() == "Glossary"):
-        current_section = 'Glossary'
-        markdown_rules += parseLineFromRules(line.strip())
-        continue
+        break
 
       if (len(line.strip()) > 0):
         markdown_rules += parseRulesEntry(line.strip())
       else:
         markdown_rules += '\n\n'
-    elif current_section == 'Glossary':
-      if (line.strip() == "Credits"):
-        current_section = 'Credits'
-        markdown_rules += parseLineFromRules(line.strip())
-        continue
 
-      markdown_rules += line + '\n\n'
-    elif current_section == 'Credits':
-      markdown_rules += line + '\n\n'
-    else:
+  markdown_rules += parseGlossaryIntoMarkdown(glossary)
+
+  for line in credits:
+    if (line.strip() == 'Credits'):
       markdown_rules += parseLineFromRules(line.strip())
+      continue
+    markdown_rules += line + '\n\n'
 
   return markdown_rules.strip()
 
